@@ -4,7 +4,7 @@
 > systems on AWS** · **Codeforces Expert (1751)** · **LeetCode Knight** · IIIT
 > Allahabad '26.
 
-### 🔗 [**kaustubh-rathi.github.io**](https://kaustubh-rathi.github.io/Kaustubh_Rathi_Portfolio/) — read it, or **[play it as a game](https://kaustubh-rathi.github.io/world/)** 🎮
+### 🔗 [**kaustubh-rathi.github.io**](https://kaustubh-rathi.github.io/Kaustubh_Rathi_Portfolio/) — read it, or **[play it as a game](https://kaustubh-rathi.github.io/Kaustubh_Rathi_Portfolio/world/)** 🎮
 
 My personal portfolio, two ways:
 
