@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- viewport-fit=cover for notches; pinch-zoom NOT blocked (WCAG 1.4.4) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kaustubh Rathi — SDE @ Amazon | GenAI &amp; Distributed Systems</title>
+  <!-- inline SVG favicon (no extra file; kills the 404) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0D17'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23FF9900'/%3E%3C/svg%3E" />
+  <!-- Identity-first meta so shared links (LinkedIn/WhatsApp/ATS) show a candidate, not a "game" -->
+  <meta name="description" content="Kaustubh Rathi — Amazon SDE building production LLM agents on AWS. Codeforces Expert (1751), LeetCode Knight, IIIT Allahabad 2026. Explore an interactive portfolio." />
+  <meta name="author" content="Kaustubh Rathi" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kaustubh Rathi — SDE @ Amazon" />
+  <meta property="og:description" content="Builds production LLM agents on AWS · Codeforces Expert 1751 · LeetCode Knight · IIIT Allahabad 2026. Interactive playable portfolio." />
+  <meta property="og:url" content="https://kaustubh-rathi.github.io/world/" />
+  <meta property="og:image" content="https://kaustubh-rathi.github.io/shared/assets/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kaustubh Rathi — SDE @ Amazon" />
+  <meta name="twitter:description" content="Production LLM agents on AWS · Codeforces Expert 1751 · LeetCode Knight." />
+  <meta name="twitter:image" content="https://kaustubh-rathi.github.io/shared/assets/og-card.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=2" />
+</head>
+<body>
+  <!-- In-play HUD: identity + progress + mute + a quiet way back to the main site. -->
+  <header class="hud">
+    <div class="hud-l">
+      <b id="hudName">—</b>
+      <span class="hud-role" id="hudRole">—</span>
+    </div>
+    <div class="hud-r">
+      <div class="progress" title="Sections explored"><i id="progressFill"></i><span id="progressTxt">1/6 explored</span></div>
+      <button class="icon-btn" id="muteBtn" aria-pressed="false" title="Sound on/off">🔊</button>
+      <a class="btn ghost" id="backLink" href="../index.html">← Portfolio</a>
+    </div>
+  </header>
+
+  <!-- Static JS-free fallback so a deep-linked visitor on a dead/JS-off browser is never stuck -->
+  <noscript><div class="nojs-fallback"><b>Kaustubh Rathi — SDE @ Amazon.</b> <a href="../shared/assets/resume-sde.pdf">↓ Résumé (PDF)</a> · <a href="../index.html">Portfolio →</a></div></noscript>
+
+  <!-- Game canvas -->
+  <canvas id="game" aria-label="Playable portfolio world. Use the Portfolio link in the top bar to return to the main site."></canvas>
+
+  <!-- GLASS launch overlay — floats over the LIVING world. Leads with tagline +
+       a self-typing terminal (facts are real text, instantly present), then ONE
+       enter + one-line controls. Identity/résumé live in the always-visible HUD
+       behind this glass (overlay does NOT block the HUD — see .boot pointer rules). -->
+  <div class="boot" id="boot">
+    <div class="boot-inner">
+      <p class="boot-tagline" id="bootTagline">Building autonomous AI agents that don't sleep.</p>
+      <pre class="boot-term" id="bootTerm" aria-label="intro"></pre>
+      <button class="boot-enter" id="bootEnter">▶ ENTER DEV WORLD</button>
+      <p class="boot-hint"><kbd>WASD</kbd> / drag to move · <kbd>E</kbd> to enter buildings · press <kbd>Enter</kbd> to begin</p>
+    </div>
+  </div>
+
+  <!-- On-screen controls (mobile / click) -->
+  <div class="pad" aria-hidden="true">
+    <button class="pad-btn up" data-dir="up">▲</button>
+    <button class="pad-btn left" data-dir="left">◀</button>
+    <button class="pad-btn right" data-dir="right">▶</button>
+    <button class="pad-btn down" data-dir="down">▼</button>
+  </div>
+  <button class="action-btn" id="btnAction" aria-label="Interact">⚡<small>enter</small></button>
+
+  <!-- Toasts -->
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <!-- Mini-game overlay -->
+  <div class="mg" id="mgRoot" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Mini-game">
+    <div class="mg-card">
+      <div class="mg-head">
+        <div><h3 id="mgTitle"></h3><p id="mgBlurb"></p></div>
+        <span class="mg-score" id="mgScore"></span>
+      </div>
+      <div class="mg-bar"><i id="mgTimer"></i></div>
+      <div class="mg-stage">
+        <canvas id="mgCanvas"></canvas>
+        <!-- START gate: choose to play, or skip straight to content -->
+        <div class="mg-overlay" id="mgStart">
+          <div class="mg-ov-card">
+            <h3 id="mgStartTitle">Mini-game</h3>
+            <p id="mgStartHint"></p>
+            <p class="mg-ov-note">Beat it to unlock the room — or skip straight to the content.</p>
+            <div class="mg-ov-btns">
+              <button class="mg-play" id="mgStartPlay">▶ PLAY</button>
+              <button class="mg-skip2" id="mgStartSkip">Skip game — reveal room</button>
+            </div>
+          </div>
+        </div>
+        <!-- RESULT (lose/time-up): retry or skip. Content does NOT auto-reveal here. -->
+        <div class="mg-overlay" id="mgResult">
+          <div class="mg-ov-card">
+            <h3 id="mgResultMsg">Try again?</h3>
+            <p class="mg-ov-note">No pressure — you can retry, or skip to the content.</p>
+            <div class="mg-ov-btns">
+              <button class="mg-play" id="mgRetry">▶ RETRY</button>
+              <button class="mg-skip2" id="mgResultSkip">Skip game — reveal room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="modalTitle"></h2><button class="modal-close" id="modalClose" aria-label="Close">✕</button></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- config.js = the ONE file to edit. Everything reads from it. -->
+  <script src="../config.js"></script>
+  <script src="../shared/fx.js"></script>
+  <script src="../shared/sprites.js"></script>
+  <script src="game.js"></script>
+  <script src="minigame.js"></script>
+  <script src="panels.js"></script>
+</body>
+</html>

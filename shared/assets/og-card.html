@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- OG card generator. Open this, screenshot the 1200x630 card, save as og-card.png.
+       (Kept as a generator so the repo stays text-only; regenerate if your config changes.) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; background: #222; display: grid; place-items: center; min-height: 100vh; }
+    #card { width: 1200px; height: 630px; background:
+        radial-gradient(900px 500px at 80% -10%, #16203a 0%, #0B0D17 60%);
+      color: #ECEDEE; font-family: "Inter", system-ui, sans-serif; position: relative; overflow: hidden; box-sizing: border-box; padding: 70px 80px; }
+    .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(90,130,200,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(90,130,200,.07) 1px, transparent 1px); background-size: 60px 60px; }
+    .dot { position: absolute; top: 70px; right: 80px; width: 16px; height: 16px; border-radius: 50%; background: #2DD4BF; box-shadow: 0 0 20px #2DD4BF; }
+    .kick { font-family: "JetBrains Mono", monospace; color: #FF9900; font-size: 22px; letter-spacing: 2px; margin: 0 0 18px; position: relative; }
+    h1 { font-size: 86px; font-weight: 800; margin: 0 0 14px; letter-spacing: -2px; position: relative; }
+    .role { font-size: 32px; color: #22D3EE; font-weight: 600; margin: 0 0 44px; position: relative; }
+    .stats { display: flex; gap: 14px; position: relative; flex-wrap: wrap; }
+    .stat { background: rgba(17,24,38,.8); border: 1px solid #233044; border-radius: 12px; padding: 16px 22px; }
+    .stat b { display: block; font-family: "JetBrains Mono", monospace; color: #FBBF24; font-size: 26px; }
+    .stat span { font-size: 16px; color: #8A99B0; }
+    .foot { position: absolute; bottom: 60px; left: 80px; font-family: "JetBrains Mono", monospace; color: #5b6b82; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="grid"></div>
+    <div class="dot"></div>
+    <p class="kick">// PLAYABLE PORTFOLIO</p>
+    <h1 id="name">Kaustubh Rathi</h1>
+    <p class="role" id="role">SDE @ Amazon · GenAI &amp; Distributed Systems</p>
+    <div class="stats" id="stats"></div>
+    <p class="foot" id="foot">github.com/Kaustubh-Rathi · Bengaluru, India</p>
+  </div>
+  <script src="../config.js"></script>
+  <script>
+    const P = window.CONFIG;
+    document.getElementById("name").textContent = P.person.name;
+    document.getElementById("role").textContent = P.person.role + " · GenAI & Distributed Systems";
+    const wrap = document.getElementById("stats");
+    P.stats.slice(0, 4).forEach((s) => {
+      const d = document.createElement("div"); d.className = "stat";
+      d.innerHTML = `<b>${s.rank}</b><span>${s.label}</span>`; wrap.appendChild(d);
+    });
+    const gh = (P.person.links.github || "").replace("https://", "");
+    document.getElementById("foot").textContent = `${gh} · ${P.person.location}`;
+  </script>
+</body>
+</html>

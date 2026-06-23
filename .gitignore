@@ -1,0 +1,11 @@
+# local snapshots / work artifacts — not part of the published site
+.backups/
+.playwright-mcp/
+*.log
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
